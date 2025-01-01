@@ -14,4 +14,6 @@ public interface HotelServices {
     ResponseEntity<ResponseDTO<Void>> addAHotel(HotelRequest hotelRequest);
 
     ResponseEntity<ResponseDTO<List<HotelResponse>>> getHotelListBySearch(String city);
+
+    ResponseEntity<ResponseDTO<HotelResponse>> getHotelById(Long id);
 }

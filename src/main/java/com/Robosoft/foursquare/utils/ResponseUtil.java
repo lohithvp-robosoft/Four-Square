@@ -24,19 +24,22 @@ public class ResponseUtil {
     }
 
 
-//    public <T> ResponseEntity<ResponseDTO<T>> successResponse(T responseData, String message) {
-//        return new ResponseEntity<>(new ResponseDTO<>(0, 200, message, responseData), HttpStatus.OK);
-//    }
+    public <T> ResponseEntity<ResponseDTO<T>> successResponse(T responseData, String message) {
+        return new ResponseEntity<>(new ResponseDTO<>(0, 200, message, responseData), HttpStatus.OK);
+    }
 
-//    public ResponseEntity<ResponseDTO<Void>> errorResponse() {
-//        return new ResponseEntity<>(new ResponseDTO<>(-1, 404, "Fail", null), HttpStatus.NOT_FOUND);
-//    }
-//
-//    public ResponseEntity<ResponseDTO<Void>> errorResponse(String message) {
-//        return new ResponseEntity<>(new ResponseDTO<>(-1, 404, message, null), HttpStatus.NOT_FOUND);
-//    }
-//
-//    public ResponseEntity<ResponseDTO<Void>> errorResponse(String message, int statusCode) {
-//        return new ResponseEntity<>(new ResponseDTO<>(-1, statusCode, message, null), HttpStatusCode.valueOf(statusCode));
-//    }
+    public <T> ResponseEntity<ResponseDTO<T>> errorResponse() {
+        return new ResponseEntity<>(new ResponseDTO<>(-1, 404, "Fail", null), HttpStatus.NOT_FOUND);
+    }
+
+    public <T> ResponseEntity<ResponseDTO<T>> errorResponse(String message) {
+        return new ResponseEntity<>(new ResponseDTO<>(-1, 404, message, null), HttpStatus.NOT_FOUND);
+    }
+
+    public <T> ResponseEntity<ResponseDTO<T>> errorResponse(String message, int statusCode) {
+        return new ResponseEntity<>(new ResponseDTO<>(-1, statusCode, message, null), HttpStatusCode.valueOf(statusCode));
+    }
+    public <T> ResponseEntity<ResponseDTO<T>> errorResponse(String message, int statusCode,T response) {
+        return new ResponseEntity<>(new ResponseDTO<>(-1, statusCode, message, response), HttpStatusCode.valueOf(statusCode));
+    }
 }

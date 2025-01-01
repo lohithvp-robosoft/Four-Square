@@ -22,7 +22,7 @@ public class HotelResponse {
 
     private String hours;
 
-//    private List<Category> categories = new ArrayList<>();
+    private List<Category> categories = new ArrayList<>();
 
     private List<Review> reviews;
 
@@ -31,7 +31,36 @@ public class HotelResponse {
         this.name = hotel.getName();
         this.city = hotel.getCity();
         this.hours = hotel.getHours();
-//        this.categories = hotel.getCategories();
+        this.categories = hotel.getCategories();
+        this.address = hotel.getAddress();
         this.reviews = hotel.getReviews();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getHours() {
+        return hours;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
     }
 }

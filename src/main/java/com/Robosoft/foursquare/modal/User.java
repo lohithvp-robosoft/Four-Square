@@ -1,10 +1,7 @@
 package com.Robosoft.foursquare.modal;
 
+import com.Robosoft.foursquare.dto.request.UserRegisterRequest;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import jakarta.persistence.Id;
 
 import java.time.LocalDateTime;
@@ -12,11 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+//@Getter
+//@Setter
+//@NoArgsConstructor
+//@AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -52,6 +50,80 @@ public class User {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+
+    public User(UserRegisterRequest userRegisterRequest, String encodedPassword){
+        this.username = userRegisterRequest.getUsername();
+        this.email = userRegisterRequest.getEmail();
+        this.password = encodedPassword;
+        if (userRegisterRequest.getRoles() == null || userRegisterRequest.getRoles().isEmpty()) {
+//            log.info("No roles provided, setting default role");
+            this.roles.add(Role.USER);
+        } else {
+            this.roles = userRegisterRequest.getRoles();
+        }
+    }
+
+    public User(String email, String password, List<Role> roles, String username) {
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        if (roles == null ||roles.isEmpty()) {
+//            log.info("No roles provided, setting default role");
+            this.roles.add(Role.USER);
+        } else {
+            this.roles = roles;
+        }
+    }
+    public User(){}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 
 }

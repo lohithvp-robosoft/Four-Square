@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
+//@Getter
+//@Setter
 public class ResponseDTO<T> {
     private int status;
     private int code;

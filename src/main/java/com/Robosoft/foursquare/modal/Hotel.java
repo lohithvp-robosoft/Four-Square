@@ -15,25 +15,26 @@ import java.util.List;
 
 @Entity
 @Table
-@Log4j2
-@Getter
-@Setter
-@AllArgsConstructor
+//@Log4j2
+//@Getter
+//@Setter
+//@AllArgsConstructor
 public class Hotel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name",nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "address",nullable = false)
     private String address;
 
-    @Column(nullable = false)
+    @Column(name = "city",nullable = false)
     private String city;
 
+    @Column(name = "hours")
     private String hours;
 
     @Enumerated(EnumType.STRING)
@@ -112,7 +113,13 @@ public class Hotel {
 
     @Override
     public String toString() {
-        return this.hours;
-//        return super.toString();
+        return "Hotel{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", city='" + city + '\'' +
+                ", hours='" + hours + '\'' +
+                ", categories=" + categories +
+                '}';
     }
 }

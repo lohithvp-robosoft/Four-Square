@@ -3,6 +3,7 @@ package com.Robosoft.foursquare.services.Impl;
 import com.Robosoft.foursquare.dto.request.HotelRequest;
 import com.Robosoft.foursquare.dto.response.HotelResponse;
 import com.Robosoft.foursquare.dto.response.ResponseDTO;
+import com.Robosoft.foursquare.exception.NotFoundException;
 import com.Robosoft.foursquare.modal.Hotel;
 import com.Robosoft.foursquare.repository.HotelRepository;
 import com.Robosoft.foursquare.services.HotelServices;
@@ -35,20 +36,23 @@ public class HotelServiceImpl implements HotelServices {
     public ResponseEntity<ResponseDTO<Void>> addAHotel(HotelRequest hotelRequest) {
         Hotel hotel = new Hotel(hotelRequest);
         hotelRepository.save(hotel);
-//        return new ResponseEntity<>("Hello", HttpStatusCode.valueOf(200));
         return responseUtil.successResponse("Successfully Added hotel to the DB");
     }
 
     @Override
     public ResponseEntity<ResponseDTO<List<HotelResponse>>> getHotelListBySearch(String city) {
-        List<Hotel> hotelList = hotelRepository.findByCity(city).orElseThrow(()->new RuntimeException("NO Hotel Present in this location"));
-        System.out.println(hotelList);
+        List<Hotel> hotelList = hotelRepository.findByCity(city).orElseThrow(()->new NotFoundException("NO Hotel Present in this location"));
+
         List<HotelResponse> hotelResponseList = new ArrayList<>();
         for(Hotel hotel : hotelList){
-//            log.info(hotel.getName());
-            logger.debug("Hello "+hotel.getAddress());
             hotelResponseList.add(new HotelResponse(hotel));
         }
         return responseUtil.successResponse(hotelResponseList);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<HotelResponse>> getHotelById(Long id) {
+        Hotel hotel = hotelRepository.findById(id).orElseThrow(()->new NotFoundException("NO Hotel Found"));
+        return responseUtil.successResponse(new HotelResponse(hotel));
     }
 }
