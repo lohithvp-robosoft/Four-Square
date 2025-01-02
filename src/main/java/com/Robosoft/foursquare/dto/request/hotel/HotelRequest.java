@@ -1,17 +1,10 @@
-package com.Robosoft.foursquare.dto.request;
+package com.Robosoft.foursquare.dto.request.hotel;
 
 import com.Robosoft.foursquare.modal.Category;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
-//@Getter
-//@Setter
-//@NoArgsConstructor
 public class HotelRequest {
 
     @NotBlank(message = "Hotel Name cannot be blank")

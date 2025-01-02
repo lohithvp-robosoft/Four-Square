@@ -75,12 +75,6 @@ public class JwtUtils {
     }
 
     public String getUserIdFromJwtToken(String token) {
-//        Object id = getPayloadFromJwtToken(token).get("id");
-//
-//        if (id != null) {
-//            return Long.valueOf(id.toString());
-//        }
-//        return null;
         return getPayloadFromJwtToken(token).get("id").toString();
     }
 
@@ -101,13 +95,16 @@ public class JwtUtils {
         return false;
     }
 
+    public Long getUserIdFromRequestHeader(HttpServletRequest request){
+        String token = getJwtFromHeader(request);
+        return Long.valueOf(getUserIdFromJwtToken(token));
+    }
+
     private void handleJwtException(Exception e, String logMessage) {
         log.error( logMessage +" "+e.getMessage());
         HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         request.setAttribute("jwt-error", logMessage + ": " + e.getMessage());
     }
-
-
 
 
 }

@@ -1,20 +1,14 @@
 package com.Robosoft.foursquare.modal;
 
-import com.Robosoft.foursquare.dto.request.ReviewRequest;
+import com.Robosoft.foursquare.dto.request.user.ReviewRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import jakarta.persistence.Id;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table
-//@NoArgsConstructor
-//@AllArgsConstructor
-//@Getter
-//@Setter
 public class Review {
 
     @Id
@@ -36,13 +30,25 @@ public class Review {
     @Column(columnDefinition = "TEXT")
     private String review;
 
+    private int rating;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     public Review(ReviewRequest reviewRequest, User user, Hotel hotel) {
         this.user = user;
         this.hotel = hotel;
         this.review = reviewRequest.getReview();
+        this.rating = reviewRequest.getRating();
     }
 
-    public Review(){}
+    public Review() {
+    }
 
     public Long getId() {
         return id;
@@ -75,4 +81,29 @@ public class Review {
     public void setReview(String review) {
         this.review = review;
     }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", user=" + (user != null ? user.getId() : null) +
+                ", hotel=" + (hotel != null ? hotel.getId() : null) +
+                ", review='" + review + '\'' +
+                ", rating=" + rating +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+
 }

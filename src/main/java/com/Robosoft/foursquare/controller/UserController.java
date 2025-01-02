@@ -1,14 +1,12 @@
 package com.Robosoft.foursquare.controller;
 
-import com.Robosoft.foursquare.dto.request.ReviewRequest;
-import com.Robosoft.foursquare.dto.request.UserLoginRequest;
-import com.Robosoft.foursquare.dto.request.UserRegisterRequest;
-import com.Robosoft.foursquare.dto.response.ResponseDTO;
-import com.Robosoft.foursquare.dto.response.UserLoginResponse;
-import com.Robosoft.foursquare.dto.response.UserRegisterResponse;
-import com.Robosoft.foursquare.modal.Hotel;
-import com.Robosoft.foursquare.modal.Review;
-import com.Robosoft.foursquare.modal.User;
+import com.Robosoft.foursquare.dto.request.user.ReviewRequest;
+import com.Robosoft.foursquare.dto.request.user.UserLoginRequest;
+import com.Robosoft.foursquare.dto.request.user.UserDetailRequest;
+import com.Robosoft.foursquare.dto.ResponseDTO;
+import com.Robosoft.foursquare.dto.response.user.UserDetailResponse;
+import com.Robosoft.foursquare.dto.response.user.UserLoginResponse;
+import com.Robosoft.foursquare.dto.response.user.UserRegisterResponse;
 import com.Robosoft.foursquare.repository.HotelRepository;
 import com.Robosoft.foursquare.repository.ReviewRepository;
 import com.Robosoft.foursquare.repository.UserRepository;
@@ -20,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/v1/user")
 public class UserController {
 
     @Autowired
@@ -29,33 +27,39 @@ public class UserController {
     @Autowired
     private HotelRepository hotelRepository;
 
-
     @Autowired
     private ReviewRepository reviewRepository;
 
     @Autowired
     private UserServices userServices;
 
+    @GetMapping
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> getUserById(HttpServletRequest request) {
+        return userServices.getUserDetail(request);
+    }
+
+    @PutMapping
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> updateUser(HttpServletRequest request, @RequestBody UserDetailRequest userDetailRequest){
+        return userServices.updateUserDetail(request,userDetailRequest);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> deleteUser(HttpServletRequest request){
+        return userServices.deleteUser(request);
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO<UserRegisterResponse>> registerAUser(@Valid @RequestBody UserRegisterRequest request){
+    public ResponseEntity<ResponseDTO<UserRegisterResponse>> registerUser(@Valid @RequestBody UserDetailRequest request) {
         return userServices.registerUser(request);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO<UserLoginResponse>> registerAUser(@Valid @RequestBody UserLoginRequest request){
+    public ResponseEntity<ResponseDTO<UserLoginResponse>> loginUser(@Valid @RequestBody UserLoginRequest request) {
         return userServices.loginUser(request);
     }
 
-//    @GetMapping
-//    public Object addaUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest){
-//        User newUser = new User(userRegisterRequest);
-//        userRepository.save(newUser);
-//        return null;
-//    }
-
     @PostMapping("/review/{hotelId}")
-    public ResponseEntity<ResponseDTO<Void>> addAReview(@RequestBody ReviewRequest reviewRequest, HttpServletRequest request, @PathVariable Long hotelId){
-        return userServices.addAReview(request,hotelId,reviewRequest);
+    public ResponseEntity<ResponseDTO<Void>> addReview(@RequestBody ReviewRequest reviewRequest, HttpServletRequest request, @PathVariable Long hotelId) {
+        return userServices.addReview(request, hotelId, reviewRequest);
     }
-
 }

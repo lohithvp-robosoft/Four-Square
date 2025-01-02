@@ -1,4 +1,4 @@
-package com.Robosoft.foursquare.dto.response;
+package com.Robosoft.foursquare.dto.response.user;
 
 import com.Robosoft.foursquare.modal.Role;
 import com.Robosoft.foursquare.modal.User;
@@ -38,7 +38,7 @@ public class UserLoginResponse {
         return token;
     }
 
-    public UserLoginResponse(User user, String token){
+    public UserLoginResponse(User user, String token) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.userName = user.getUsername();

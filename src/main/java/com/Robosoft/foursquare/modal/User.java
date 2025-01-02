@@ -1,19 +1,19 @@
 package com.Robosoft.foursquare.modal;
 
-import com.Robosoft.foursquare.dto.request.UserRegisterRequest;
+import com.Robosoft.foursquare.dto.request.user.UserDetailRequest;
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-//@Getter
-//@Setter
-//@NoArgsConstructor
-//@AllArgsConstructor
 public class User {
+
+    private static final Log log = LogFactory.getLog(User.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,6 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
@@ -32,7 +31,7 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
     private List<Review> reviews;
 
     @Column(name = "created_at", updatable = false)
@@ -53,12 +52,11 @@ public class User {
     }
 
 
-    public User(UserRegisterRequest userRegisterRequest, String encodedPassword){
+    public User(UserDetailRequest userRegisterRequest, String encodedPassword){
         this.username = userRegisterRequest.getUsername();
         this.email = userRegisterRequest.getEmail();
         this.password = encodedPassword;
         if (userRegisterRequest.getRoles() == null || userRegisterRequest.getRoles().isEmpty()) {
-//            log.info("No roles provided, setting default role");
             this.roles.add(Role.USER);
         } else {
             this.roles = userRegisterRequest.getRoles();
@@ -70,7 +68,7 @@ public class User {
         this.password = password;
         this.username = username;
         if (roles == null ||roles.isEmpty()) {
-//            log.info("No roles provided, setting default role");
+            log.info("No roles provided, setting default role");
             this.roles.add(Role.USER);
         } else {
             this.roles = roles;
@@ -126,4 +124,19 @@ public class User {
         this.reviews = reviews;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", roles=" + roles +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }

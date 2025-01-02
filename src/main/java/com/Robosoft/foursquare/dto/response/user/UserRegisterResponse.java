@@ -1,4 +1,4 @@
-package com.Robosoft.foursquare.dto.response;
+package com.Robosoft.foursquare.dto.response.user;
 
 import com.Robosoft.foursquare.modal.Role;
 import com.Robosoft.foursquare.modal.User;
@@ -16,7 +16,7 @@ public class UserRegisterResponse {
 
     private List<Role> roles = new ArrayList<>();
 
-    public UserRegisterResponse(User user){
+    public UserRegisterResponse(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.userName = user.getUsername();

@@ -1,24 +1,15 @@
 package com.Robosoft.foursquare.modal;
 
-import com.Robosoft.foursquare.dto.request.HotelRequest;
+import com.Robosoft.foursquare.dto.request.hotel.HotelRequest;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import jakarta.persistence.Id;
-import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table
-//@Log4j2
-//@Getter
-//@Setter
-//@AllArgsConstructor
 public class Hotel {
 
     @Id
@@ -41,7 +32,7 @@ public class Hotel {
     @ElementCollection(fetch = FetchType.EAGER)
     List<Category> categories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "hotel")
+    @OneToMany(mappedBy = "hotel",cascade = CascadeType.REMOVE)
     private List<Review> reviews;
 
     public Hotel(HotelRequest hotelRequest) {

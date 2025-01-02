@@ -1,13 +1,12 @@
-package com.Robosoft.foursquare.dto.response;
+package com.Robosoft.foursquare.dto.response.hotel;
 
 import com.Robosoft.foursquare.modal.Category;
 import com.Robosoft.foursquare.modal.Hotel;
-import com.Robosoft.foursquare.modal.Review;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HotelResponse {
@@ -24,7 +23,7 @@ public class HotelResponse {
 
     private List<Category> categories = new ArrayList<>();
 
-    private List<Review> reviews;
+    private List<HotelReviewResponse> reviews;
 
     public HotelResponse(Hotel hotel){
         this.id = hotel.getId();
@@ -33,7 +32,9 @@ public class HotelResponse {
         this.hours = hotel.getHours();
         this.categories = hotel.getCategories();
         this.address = hotel.getAddress();
-        this.reviews = hotel.getReviews();
+        this.reviews = hotel.getReviews().stream()
+                .map(HotelReviewResponse::new)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -60,7 +61,7 @@ public class HotelResponse {
         return categories;
     }
 
-    public List<Review> getReviews() {
+    public List<HotelReviewResponse> getReviews() {
         return reviews;
     }
 }

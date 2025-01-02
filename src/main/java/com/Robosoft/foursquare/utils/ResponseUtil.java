@@ -1,11 +1,10 @@
 package com.Robosoft.foursquare.utils;
 
-import com.Robosoft.foursquare.dto.response.ResponseDTO;
+import com.Robosoft.foursquare.dto.ResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-//import org.springframework..Component;
 
 @Component
 public class ResponseUtil {
@@ -14,7 +13,6 @@ public class ResponseUtil {
         return new ResponseEntity<>(new ResponseDTO<>(0, 200, "Success", responseData), HttpStatus.OK);
     }
 
-    // Method without data (returns Void)
     public ResponseEntity<ResponseDTO<Void>> successResponse() {
         return new ResponseEntity<>(new ResponseDTO<>(0, 200, "Success", null), HttpStatus.OK);
     }

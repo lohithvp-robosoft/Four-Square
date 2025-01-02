@@ -41,10 +41,10 @@ public class AppConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/api/user/register","/api/user/login").permitAll()
-                                .requestMatchers("/api/hotel/add").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/hotel/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/user/register", "/api/v1/user/login").permitAll()
+                                .requestMatchers("/actuator/**").permitAll()
                                 .anyRequest().authenticated()
-//                    .requestMatchers("/error", "/error/**").permitAll()
         );
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -65,7 +65,7 @@ public class AppConfig {
         return email -> userRepository.findByEmail(email)
                 .map(user -> {
                     var authorities = user.getRoles().stream()
-                            .map(role -> new SimpleGrantedAuthority(role.name()))
+                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                             .collect(Collectors.toList());
 
                     return new org.springframework.security.core.userdetails.User(

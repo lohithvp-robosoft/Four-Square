@@ -1,4 +1,4 @@
-package com.Robosoft.foursquare.dto.request;
+package com.Robosoft.foursquare.dto.request.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

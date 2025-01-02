@@ -1,58 +1,97 @@
 package com.Robosoft.foursquare.services.Impl;
 
-import com.Robosoft.foursquare.dto.request.HotelRequest;
-import com.Robosoft.foursquare.dto.response.HotelResponse;
-import com.Robosoft.foursquare.dto.response.ResponseDTO;
+import com.Robosoft.foursquare.dto.request.hotel.HotelRequest;
+import com.Robosoft.foursquare.dto.response.hotel.HotelResponse;
+import com.Robosoft.foursquare.dto.ResponseDTO;
 import com.Robosoft.foursquare.exception.NotFoundException;
 import com.Robosoft.foursquare.modal.Hotel;
 import com.Robosoft.foursquare.repository.HotelRepository;
 import com.Robosoft.foursquare.services.HotelServices;
+import com.Robosoft.foursquare.utils.EntityUpdaterUtil;
 import com.Robosoft.foursquare.utils.ResponseUtil;
-import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
-//import org.apache.logging.log4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class HotelServiceImpl implements HotelServices {
 
-    private static final Logger logger = LoggerFactory.getLogger(HotelServiceImpl.class);   // Default logger
     @Autowired
     private HotelRepository hotelRepository;
 
     @Autowired
     private ResponseUtil responseUtil;
 
+    @Autowired
+    private EntityUpdaterUtil entityUpdaterUtil;
+
+    @Value("${success.hotel.added.message}")
+    private String hotelAddedMessage;
+
+    @Value("${success.hotel.deleted.message}")
+    private String hotelDeletedMessage;
+
+    @Value("${error.hotel.notFound.message}")
+    private String hotelNotFoundMessage;
+
+    @Value("${success.hotel.updated.message}")
+    private String hotelUpdatedMessage;
+
     @Override
-    public ResponseEntity<ResponseDTO<Void>> addAHotel(HotelRequest hotelRequest) {
+    public ResponseEntity<ResponseDTO<Void>> addHotel(HotelRequest hotelRequest) {
         Hotel hotel = new Hotel(hotelRequest);
         hotelRepository.save(hotel);
-        return responseUtil.successResponse("Successfully Added hotel to the DB");
+        return responseUtil.successResponse(hotelAddedMessage);
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<List<HotelResponse>>> getHotelListBySearch(String city) {
-        List<Hotel> hotelList = hotelRepository.findByCity(city).orElseThrow(()->new NotFoundException("NO Hotel Present in this location"));
+    public ResponseEntity<ResponseDTO<List<HotelResponse>>> getHotelListBySearch(String place) {
+        List<Hotel> hotelList = hotelRepository.findByCityContainingIgnoreCase(place).get();
 
-        List<HotelResponse> hotelResponseList = new ArrayList<>();
-        for(Hotel hotel : hotelList){
-            hotelResponseList.add(new HotelResponse(hotel));
-        }
+        if (hotelList.isEmpty()) throw new NotFoundException(hotelNotFoundMessage);
+
+        List<HotelResponse> hotelResponseList = hotelList.stream().map(HotelResponse::new).toList();
+
         return responseUtil.successResponse(hotelResponseList);
     }
 
     @Override
     public ResponseEntity<ResponseDTO<HotelResponse>> getHotelById(Long id) {
-        Hotel hotel = hotelRepository.findById(id).orElseThrow(()->new NotFoundException("NO Hotel Found"));
+        Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new NotFoundException(hotelNotFoundMessage));
+
         return responseUtil.successResponse(new HotelResponse(hotel));
     }
+
+    @Override
+    public ResponseEntity<ResponseDTO<HotelResponse>> deleteHotelById(Long id) {
+        Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new NotFoundException(hotelNotFoundMessage));
+        HotelResponse hotelResponse = new HotelResponse(hotel);
+        hotelRepository.delete(hotel);
+
+        return responseUtil.successResponse(hotelResponse, hotelDeletedMessage);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<HotelResponse>> updateHotelById(Long hotelId, HotelRequest updatedHotel) {
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new NotFoundException(hotelNotFoundMessage));
+        Hotel updateHotel = entityUpdaterUtil.updateHotel(updatedHotel, hotel);
+
+        hotelRepository.save(updateHotel);
+
+        return responseUtil.successResponse(new HotelResponse(updateHotel), hotelUpdatedMessage);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<List<HotelResponse>>> getAllHotels() {
+        List<Hotel> hotelList = hotelRepository.findAll();
+        if (hotelList.isEmpty()) throw new NotFoundException(hotelNotFoundMessage);
+        List<HotelResponse> hotelResponsesList = hotelList.stream().map(HotelResponse::new).toList();
+
+        return responseUtil.successResponse(hotelResponsesList);
+    }
+
+
 }

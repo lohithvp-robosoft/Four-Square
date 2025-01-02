@@ -1,4 +1,4 @@
-package com.Robosoft.foursquare.dto.request;
+package com.Robosoft.foursquare.dto.request.user;
 
 import com.Robosoft.foursquare.modal.Role;
 import jakarta.validation.constraints.Email;
@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserRegisterRequest {
+public class UserDetailRequest {
 
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email cannot be blank")
@@ -22,13 +22,13 @@ public class UserRegisterRequest {
     @Pattern(
             regexp = "^(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?])(?=.*\\d.*\\d).+$",
             message = "Password must include at least 2 numbers and 1 special character"
-    )
+    )//password should have 2 number and 1 special character
     private String password;
 
     private List<Role> roles = new ArrayList<>();
 
 
-    public UserRegisterRequest(String email, String username, String password, List<Role> roles) {
+    public UserDetailRequest(String email, String username, String password, List<Role> roles) {
         this.email = email;
         this.username = username;
         this.password = password;

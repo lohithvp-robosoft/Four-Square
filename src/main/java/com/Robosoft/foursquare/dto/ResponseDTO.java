@@ -1,12 +1,5 @@
-package com.Robosoft.foursquare.dto.response;
+package com.Robosoft.foursquare.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-//@Getter
-//@Setter
 public class ResponseDTO<T> {
     private int status;
     private int code;

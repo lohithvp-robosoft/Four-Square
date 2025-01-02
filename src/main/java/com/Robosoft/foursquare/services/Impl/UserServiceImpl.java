@@ -1,11 +1,12 @@
 package com.Robosoft.foursquare.services.Impl;
 
-import com.Robosoft.foursquare.dto.request.ReviewRequest;
-import com.Robosoft.foursquare.dto.request.UserLoginRequest;
-import com.Robosoft.foursquare.dto.request.UserRegisterRequest;
-import com.Robosoft.foursquare.dto.response.ResponseDTO;
-import com.Robosoft.foursquare.dto.response.UserLoginResponse;
-import com.Robosoft.foursquare.dto.response.UserRegisterResponse;
+import com.Robosoft.foursquare.dto.request.user.ReviewRequest;
+import com.Robosoft.foursquare.dto.request.user.UserLoginRequest;
+import com.Robosoft.foursquare.dto.request.user.UserDetailRequest;
+import com.Robosoft.foursquare.dto.ResponseDTO;
+import com.Robosoft.foursquare.dto.response.user.UserDetailResponse;
+import com.Robosoft.foursquare.dto.response.user.UserLoginResponse;
+import com.Robosoft.foursquare.dto.response.user.UserRegisterResponse;
 import com.Robosoft.foursquare.exception.EmailAlreadyExistsException;
 import com.Robosoft.foursquare.exception.InvalidCredentialsException;
 import com.Robosoft.foursquare.exception.NotFoundException;
@@ -17,14 +18,14 @@ import com.Robosoft.foursquare.repository.HotelRepository;
 import com.Robosoft.foursquare.repository.ReviewRepository;
 import com.Robosoft.foursquare.repository.UserRepository;
 import com.Robosoft.foursquare.services.UserServices;
+import com.Robosoft.foursquare.utils.EntityUpdaterUtil;
 import com.Robosoft.foursquare.utils.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserServices {
@@ -47,19 +48,35 @@ public class UserServiceImpl implements UserServices {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @Override
-    public Object addAUser() {
-        return null;
-    }
+    @Autowired
+    private EntityUpdaterUtil entityUpdaterUtil;
+
+    @Value("${success.user.registration.message}")
+    private String userRegistrationMessage;
+
+    @Value("${error.hotel.notFound.message}")
+    private String hotelNotFoundMessage;
+
+    @Value("${error.user.notFound.message}")
+    private String userNotFoundMessage;
+
+    @Value("${success.user.review.added.message}")
+    private String reviewAddedMessage;
+
+    @Value("${success.user.updated.message}")
+    private String userUpdatedMessage;
+
+    @Value("${success.user.delete.message}")
+    private String userDeletedMessage;
 
     @Override
-    public ResponseEntity<ResponseDTO<UserRegisterResponse>> registerUser(UserRegisterRequest userRegisterRequest) {
+    public ResponseEntity<ResponseDTO<UserRegisterResponse>> registerUser(UserDetailRequest userDetailRequest) {
 
-        if (userRepository.existsByEmail(userRegisterRequest.getEmail())) throw new EmailAlreadyExistsException();
+        if (userRepository.existsByEmail(userDetailRequest.getEmail())) throw new EmailAlreadyExistsException();
 
-        User newUser = new User(userRegisterRequest, passwordEncoder.encode(userRegisterRequest.getPassword()));
+        User newUser = new User(userDetailRequest, passwordEncoder.encode(userDetailRequest.getPassword()));
         userRepository.save(newUser);
-        return responseUtil.successResponse(new UserRegisterResponse(newUser), "Registration Successfully");
+        return responseUtil.successResponse(new UserRegisterResponse(newUser), userRegistrationMessage);
     }
 
     @Override
@@ -75,17 +92,45 @@ public class UserServiceImpl implements UserServices {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO<Void>> addAReview(HttpServletRequest request, Long hotelId, ReviewRequest reviewRequest) {
-
-        Long userId = Long.valueOf(jwtUtils.getUserIdFromJwtToken(jwtUtils.getJwtFromHeader(request)));
-
+    public ResponseEntity<ResponseDTO<Void>> addReview(HttpServletRequest request, Long hotelId, ReviewRequest reviewRequest) {
+        Long userId = jwtUtils.getUserIdFromRequestHeader(request);
         User user = userRepository.findById(userId).get();
-        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new NotFoundException("Hotel Not Found"));
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new NotFoundException(hotelNotFoundMessage));
 
         Review review = new Review(reviewRequest, user, hotel);
-
         reviewRepository.save(review);
-        return responseUtil.successResponse("Review successfully added");
+
+        return responseUtil.successResponse(reviewAddedMessage);
     }
+
+    @Override
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> getUserDetail(HttpServletRequest request) {
+        Long userId = jwtUtils.getUserIdFromRequestHeader(request);
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userNotFoundMessage));
+        UserDetailResponse userDetailResponse = new UserDetailResponse(user);
+
+        return responseUtil.successResponse(userDetailResponse);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> updateUserDetail(HttpServletRequest request, UserDetailRequest updatedUser) {
+        Long userId = jwtUtils.getUserIdFromRequestHeader(request);
+        User user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException(userNotFoundMessage));
+        User modifiedUser = entityUpdaterUtil.updateUser(updatedUser,user);
+        userRepository.save(modifiedUser);
+
+        return responseUtil.successResponse(new UserDetailResponse(modifiedUser), userUpdatedMessage);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<UserDetailResponse>> deleteUser(HttpServletRequest request) {
+        Long userId = jwtUtils.getUserIdFromRequestHeader(request);
+        User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException(userNotFoundMessage));
+        UserDetailResponse userDetailResponse = new UserDetailResponse(user);
+        userRepository.delete(user);
+
+        return responseUtil.successResponse(userDetailResponse,userDeletedMessage);
+    }
+
 
 }
